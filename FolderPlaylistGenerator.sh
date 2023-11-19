@@ -1,5 +1,27 @@
 #!/bin/bash
 
+SubFilePlaylist()
+{
+    cd "$i"
+
+    for i in ./*; do 
+
+        [[ -d $i ]] && SubFilePlaylist "$i"  && continue
+        [[ $i == $patt1 ]] || 
+        [[ $i == $patt2 ]] ||
+        [[ $i == $patt3 ]] ||
+        [[ $i == $patt4 ]] ||
+        [[ $i == $patt5 ]] &&
+        echo "$(pwd)/${i}" >> "$(pwd).m3u" &&
+        names+=("$(pwd)/${i}")
+
+    done
+
+    mv "$(pwd).m3u" "$(pwd)/"
+
+    cd ..
+}
+
 declare -a names=() 
 
 patt1="*.mkv*"
@@ -11,25 +33,21 @@ patt5="*.avi*"
 touch "$(pwd).m3u"
 
 for i in ./*; do
-
-    [[ -d $i ]] && cd "$i" &&
-    for j in ./*; do
-        [[ $j == $patt1 ]] || 
-        [[ $j == $patt2 ]] ||
-        [[ $j == $patt3 ]] ||
-        [[ $j == $patt4 ]] ||
-        [[ $j == $patt5 ]] &&
-        echo "$(pwd)/${j}" >> "$(pwd).m3u"&&
-        echo "$(pwd)/${j}" >> "$(cd ../ && pwd).m3u"
         
-    done 
-     
-    [[ -f "$(pwd).m3u" ]] && 
-    mv "$(pwd).m3u" /"$(pwd)/$(i)/" &&
-    cd ..
+    [[ -d $i ]] && SubFilePlaylist "$i" && continue
+    [[ $i == $patt1 ]] || 
+    [[ $i == $patt2 ]] ||
+    [[ $i == $patt3 ]] ||
+    [[ $i == $patt4 ]] ||
+    [[ $i == $patt5 ]] &&
+    echo "$(pwd)/${i}" >> "$(pwd).m3u"
 
 done
 
-[[ $(cd ../ && pwd) ]] && 
-mv "$(cd ../ && pwd).m3u" "$(cd ../ && pwd)/" ||
+for i in "${names[@]}"; do 
+    
+    echo "${i}" >> "$(pwd).m3u"
+
+done
+
 mv "$(pwd).m3u" "$(pwd)/"
